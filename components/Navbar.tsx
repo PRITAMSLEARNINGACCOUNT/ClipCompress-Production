@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { Cleanup } from "@/app/server/Server_Actions";
+import Spinner from "@/components/Spinner";
 const Navbar = () => {
   const Pathname = usePathname();
   const router = useRouter();
@@ -13,6 +14,7 @@ const Navbar = () => {
     setPage(Pathname);
   }, [router, Pathname]);
   const { signOut } = useClerk();
+  const [Loading, setLoading] = useState<boolean>(false);
 
   return (
     <div className="flex justify-center mt-3">
@@ -53,18 +55,24 @@ const Navbar = () => {
           <>
             <li
               onClick={async () => {
+                setLoading(true);
                 await Cleanup();
                 await signOut({ redirectUrl: "/" });
                 setPage("/");
+                setLoading(false);
               }}
             >
-              <Image
-                src="/Logout.png"
-                alt="LoginIcon"
-                width={500}
-                height={500}
-                className="h-12 w-16"
-              />
+              {Loading ? (
+                <Spinner />
+              ) : (
+                <Image
+                  src="/Logout.png"
+                  alt="LoginIcon"
+                  width={500}
+                  height={500}
+                  className="h-12 w-16"
+                />
+              )}
             </li>
           </>
         ) : (
